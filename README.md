@@ -427,8 +427,8 @@ Please use the [GitHub Issues](https://github.com/your-username/worldwebtree-url
 - Include your environment details
 
 ### Support
-- 📧 **Email**: support@worldwebtree.com
-- 💬 **Discord**: [Join our community](https://discord.gg/worldwebtree)
+- 📧 **Email**: umarpak995@gmail.com
+- 💬 **Linkedin**: [Join me](https://linkedin.com/in/umar444)
 - 📖 **Documentation**: [Read the docs](https://docs.worldwebtree.com)
 - 🐛 **Bug Tracker**: [GitHub Issues](https://github.com/your-username/worldwebtree-url-shortener/issues)
 
