@@ -401,7 +401,7 @@ Run code style checks:
 composer run style-check
 ```
 
-## 📋 Roadmap
+## 📋 Upcoming Features 
 
 - [ ] **Click Tracking System** - Advanced analytics dashboard
 - [ ] **Custom Domains** - White-label solutions
