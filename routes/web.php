@@ -24,10 +24,13 @@ Auth::routes();
 
 Route::get('generate-shorten-link', 'ShortLinkController@index')->name('generate.shorten.link');
 
-Route::post('shorten-link/store', 'ShortLinkController@store')->name('generate.shorten.link.post');
-
-   
-Route::get('/{code}', 'ShortLinkController@shortenLink')->name('shorten.link');
-
+Route::post('shorten-link/store', 'ShortLinkController@store')
+    ->name('generate.shorten.link.post')
+    ->middleware('throttle:10,1'); // Rate limit: 10 requests per minute
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+// This must be LAST - catch-all route for short links
+Route::get('/{code}', 'ShortLinkController@shortenLink')
+    ->name('shorten.link')
+    ->where('code', '[A-Za-z0-9]{6}'); // Only 6 character alphanumeric codes

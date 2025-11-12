@@ -40,26 +40,79 @@ class ShortLinkController extends Controller
     public function store(Request $request)
     {
         if($request->ajax()){
+            // Enhanced validation
             $request->validate([
-                'link' => 'required|url',
-           ]);
-   
-           $input['link'] = $request->link;
-           $input['code'] = Str::random(6);
-   
-           ShortLink::create($input);
-   
-           return "http://127.0.0.1:8000/Orbailix/".$input['code'];
+                'link' => 'required|url|max:2048|regex:/^https?:\/\/.+/i',
+            ]);
+
+            $input['link'] = $request->link;
+
+            // Generate unique code with collision detection
+            do {
+                $code = Str::random(6);
+            } while (ShortLink::codeExists($code));
+
+            $input['code'] = $code;
+
+            $shortLink = ShortLink::create($input);
+
+            // Return the short URL using the model's method
+            return $shortLink->short_url;
         }
-                      
-        
+
+        return response()->json(['error' => 'Invalid request'], 400);
     }
 
     public function shortenLink($code)
-      {
-          $find = ShortLink::where('code',$code)->first();
-          return redirect($find->link);
-      }
+    {
+        // Use the model's method for better consistency
+        $shortLink = ShortLink::findByCode($code);
+
+        if (!$shortLink) {
+            abort(404, 'Short link not found. The link may have expired or been deleted.');
+        }
+
+        // Track click (optional - you could add click tracking here later)
+        // $shortLink->increment('clicks');
+
+        return redirect($shortLink->link);
+    }
+
+    /**
+     * Get statistics for a short link
+     */
+    public function stats($code)
+    {
+        $shortLink = ShortLink::findByCode($code);
+
+        if (!$shortLink) {
+            return response()->json(['error' => 'Link not found'], 404);
+        }
+
+        return response()->json([
+            'code' => $shortLink->code,
+            'original_url' => $shortLink->link,
+            'short_url' => $shortLink->short_url,
+            'created_at' => $shortLink->created_at,
+            'clicks' => 0, // You can add click tracking later
+        ]);
+    }
+
+    /**
+     * Delete a short link (for admin purposes)
+     */
+    public function destroy($id)
+    {
+        $shortLink = ShortLink::find($id);
+
+        if (!$shortLink) {
+            return response()->json(['error' => 'Link not found'], 404);
+        }
+
+        $shortLink->delete();
+
+        return response()->json(['message' => 'Link deleted successfully']);
+    }
 
 
     /**
@@ -96,14 +149,4 @@ class ShortLinkController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
